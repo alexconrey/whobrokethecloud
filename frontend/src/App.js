@@ -27,8 +27,6 @@ function App() {
           alt="logo"
           src={logo}
         />
-        {/* {logo} */}
-        {/* <logo /> */}
       </Grid>
       <Grid item xs={3}>
         <Home />
