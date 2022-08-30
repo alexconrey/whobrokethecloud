@@ -47,6 +47,7 @@ var (
 func (o *Outages) PollMetrics() {
 	for {
 		outagesGauge.Set(float64(len(o.Outages)))
+		time.Sleep(time.Second / 2)
 	}
 }
 
@@ -117,6 +118,7 @@ func (o *Outages) StartWatchdog(days_ttl int) {
 				o.removeIndexFromOutages(idx)
 			}
 		}
+		time.Sleep(time.Second * 5)
 	}
 }
 

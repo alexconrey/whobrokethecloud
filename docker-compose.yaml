@@ -8,6 +8,7 @@ services:
       - 6060:6060
     command:
       - '-metrics-port=9100'
+      - '-debug'
   prometheus:
     image: prom/prometheus:v2.36.2
     volumes:
@@ -26,14 +27,7 @@ services:
     image: grafana/grafana-oss:latest
     volumes:
       - ./dev/grafana/:/etc/grafana/provisioning
-    #   - prometheus_data:/prometheus
-    # command:
-    #   - '--config.file=/etc/prometheus/prometheus.yaml'
-    #   - '--storage.tsdb.path=/prometheus'
-    #   - '--web.console.libraries=/usr/share/prometheus/console_libraries'
-    #   - '--web.console.templates=/usr/share/prometheus/consoles'
-    # environment:
-    #   - GF_DATASOURCES_=value
+      - grafana_data:/var/lib/grafana
     ports:
       - 3000:3000
     links:
@@ -41,3 +35,4 @@ services:
 
 volumes:
   prometheus_data: {}
+  grafana_data: {}

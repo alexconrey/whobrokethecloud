@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
+	// "fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"go.uber.org/zap"
 	"io"
@@ -44,7 +44,6 @@ func (g *GoogleFeed) ParseFeed() ([]GoogleOutage, error) {
 }
 
 func (gf *GoogleFeed) GetOutages() error {
-	fmt.Println("getting outages")
 	timer := prometheus.NewTimer(gf.PollDurationHistogram.WithLabelValues(gf.URL))
 	defer timer.ObserveDuration()
 	googleOutages, err := gf.ParseFeed()

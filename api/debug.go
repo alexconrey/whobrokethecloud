@@ -16,11 +16,11 @@ type DebugServer struct {
 func NewDebugServer(address string, logger *zap.SugaredLogger) *DebugServer {
 	return &DebugServer{
 		Server: &http.Server{
-			Addr:         address,
-			WriteTimeout: time.Second * 15,
-			ReadTimeout:  time.Second * 15,
-			IdleTimeout:  time.Second * 60,
-			Handler:      loggingMiddleware(http.DefaultServeMux),
+			Addr: address,
+			// WriteTimeout: time.Second * 15,
+			ReadTimeout: time.Second * 15,
+			IdleTimeout: time.Second * 60,
+			Handler:     loggingMiddleware(http.DefaultServeMux),
 		},
 		Logger: logger,
 	}

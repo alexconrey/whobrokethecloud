@@ -20,18 +20,30 @@ func main() {
 		debugPort   int
 		metricsPort int
 		pollDelay   time.Duration
+		isDebug     bool
 
 		feedPollDuration = prometheus.NewHistogramVec(prometheus.HistogramOpts{
 			Name: "outage_feed_poll_duration",
 			Help: "Histogram for the runtime of a feed poll.",
 		}, []string{"url"})
 	)
+
+	//
+	// FLAGS
+	//
+	flag.DurationVar(&wait, "graceful-timeout", time.Second*15, "the duration for which the server gracefully wait for existing connections to finish - e.g. 15s or 1m")
+	flag.IntVar(&httpPort, "http-port", 8080, "The port on which the HTTP server will run")
+	flag.IntVar(&debugPort, "debug-port", 6060, "The port on which to run debugging services")
+	flag.IntVar(&metricsPort, "metrics-port", 9100, "The port on which the metrics server will run")
+	flag.DurationVar(&pollDelay, "poll-delay", time.Second*180, "The delay interval (in seconds) for waiting between polling attempts per provider")
+	flag.BoolVar(&isDebug, "debug", false, "Enable debug features (pprof, etc)")
+	flag.Parse()
+
 	//
 	// LOGGING
 	//
 	loggerConfig := zap.NewProductionConfig()
 
-	_, isDebug := os.LookupEnv("DEBUG")
 	if isDebug {
 		loggerConfig.Level.SetLevel(zap.DebugLevel)
 	}
@@ -44,16 +56,6 @@ func main() {
 
 	// prometheus.Register(requestCounter)
 	prometheus.Register(feedPollDuration)
-
-	//
-	// FLAGS
-	//
-	flag.DurationVar(&wait, "graceful-timeout", time.Second*15, "the duration for which the server gracefully wait for existing connections to finish - e.g. 15s or 1m")
-	flag.IntVar(&httpPort, "http-port", 8080, "The port on which the HTTP server will run")
-	flag.IntVar(&debugPort, "debug-port", 6060, "The port on which to run debugging services")
-	flag.IntVar(&metricsPort, "metrics-port", 9100, "The port on which the metrics server will run")
-	flag.DurationVar(&pollDelay, "poll-delay", time.Second*180, "The delay interval (in seconds) for waiting between polling attempts per provider")
-	flag.Parse()
 
 	outages := NewOutages(sugar)
 
@@ -86,8 +88,6 @@ func main() {
 	}
 
 	// Polling goroutines
-	fmt.Println(pollDelay)
-
 	go aznFeeds.Poll(pollDelay)
 	go googleFeed.Poll(pollDelay)
 

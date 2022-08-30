@@ -9,18 +9,19 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 var (
 	httpDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
 		Name: "http_duration_seconds",
 		Help: "Duration of HTTP requests.",
-	}, []string{"path"})
+	}, []string{"handler", "code"})
 
 	requestCounter = prometheus.NewCounterVec(prometheus.CounterOpts{
 		Name: "http_requests_total",
 		Help: "Total number of HTTP requests",
-	}, []string{"path"})
+	}, []string{"handler", "code"})
 )
 
 type loggingResponseWriter struct {
@@ -57,11 +58,14 @@ func prometheusMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		route := mux.CurrentRoute(r)
 		path, _ := route.GetPathTemplate()
-		timer := prometheus.NewTimer(httpDuration.WithLabelValues(path))
 		wr := NewLoggingResponseWriter(w)
+		statusCode := strconv.Itoa(wr.statusCode)
+
+		timer := prometheus.NewTimer(httpDuration.WithLabelValues(path, statusCode))
 		next.ServeHTTP(wr, r)
+		fmt.Println(wr.statusCode)
 		timer.ObserveDuration()
-		requestCounter.WithLabelValues(path).Inc()
+		requestCounter.WithLabelValues(path, statusCode).Inc()
 	})
 }
 
