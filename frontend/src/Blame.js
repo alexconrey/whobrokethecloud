@@ -10,19 +10,25 @@ Object.defineProperty(String.prototype, 'capitalize', {
 
 function RenderOutageRow(props) {
     return (
-        <tr>
+        <tr key="{props.provider}-{props.service}">
             <td>{props.provider.capitalize()}</td>
             <td>{props.service}</td>
             <td>{props.starttime}</td>
+            <td>{props.description}</td>
         </tr>
     )
 }
 function RenderOutageTable(props) {
     var outages = [];
-    props.outages.map((outage) => {
-        outage.map((test) => {
+    props.outages.map((outageArray) => {
+        outageArray.map((outage) => {
             outages.push(
-                <RenderOutageRow provider={test.Provider} service={test.Service} starttime={test.StartTime} />
+                <RenderOutageRow 
+                    provider={outage.Provider} 
+                    service={outage.Service} 
+                    starttime={outage.StartTime} 
+                    description={outage.Description} 
+                />
             )
         })
     })
@@ -33,6 +39,7 @@ function RenderOutageTable(props) {
                     <th>Provider</th>
                     <th>Service</th>
                     <th>Start Time</th>
+                    <th>Description</th>
                 </tr>
             </thead>
             <tbody>
@@ -88,8 +95,15 @@ export default function Blame() {
 
         if (affectedProviders === 0) {
             return <div>No outages, surprisingly!</div>
-        // } else if (affectedProviders == 1) {
-        //     return <h1>We're blaming {Object.keys(currentOutageCount)[0].capitalize()}.</h1>
+        } else if (affectedProviders == 1) {
+            return (
+                <div>
+                    <h1>We're blaming {Object.keys(currentOutageCount)[0].capitalize()}</h1>
+                    <div>
+                        <RenderOutageTable outages={outageArr} />
+                    </div>
+                </div>
+            )
         } else {
             return (
                 <div>

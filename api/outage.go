@@ -10,9 +10,10 @@ import (
 )
 
 type Outage struct {
-	Provider  string
-	Service   string
-	StartTime time.Time
+	Provider    string
+	Service     string
+	StartTime   time.Time
+	Description string
 }
 
 type Outages struct {
@@ -94,6 +95,15 @@ func (o *Outages) AddOutages(outages []Outage) {
 func (o *Outages) AddOutage(outage Outage) {
 	o.mu.Lock()
 	defer o.mu.Unlock()
+	for _, existingOutage := range o.Outages {
+		if outage == existingOutage {
+			o.Logger.Debugw("Skipping outage event as it already exists",
+				"provider", outage.Provider,
+				"start_time", outage.StartTime,
+			)
+			return
+		}
+	}
 	o.Outages = append(o.Outages, outage)
 	o.Logger.Debugw("Loaded outage event",
 		"provider", outage.Provider,

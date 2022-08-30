@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	// "fmt"
+	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"go.uber.org/zap"
 	"io"
@@ -51,7 +51,7 @@ func (gf *GoogleFeed) GetOutages() error {
 		return err
 	}
 
-	yesterday := time.Now().AddDate(0, 0, -31)
+	yesterday := time.Now().AddDate(0, 0, -1)
 	for _, outage := range googleOutages {
 		if outage.Begin.Before(yesterday) {
 			continue
@@ -117,10 +117,11 @@ type GoogleOutage struct {
 }
 
 func (out *GoogleOutage) ToOutage() Outage {
-	// fmt.Println(out)
+	fmt.Println(out.ExternalDescription)
 	return Outage{
-		Provider:  "google",
-		Service:   out.ServiceName,
-		StartTime: out.Begin,
+		Provider:    "google",
+		Service:     out.ServiceName,
+		StartTime:   out.Begin,
+		Description: out.ExternalDescription,
 	}
 }

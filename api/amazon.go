@@ -41,7 +41,7 @@ func (a *AmazonFeed) GetOutages() ([]Outage, error) {
 		return nil, err
 	}
 
-	yesterday := time.Now().AddDate(0, 0, -31)
+	yesterday := time.Now().AddDate(0, 0, -1)
 
 	for _, item := range feed.Items {
 		if item.PublishedParsed.Before(yesterday) {
@@ -61,9 +61,10 @@ func (a *AmazonFeed) GetOutages() ([]Outage, error) {
 		svcName = strings.Trim(svcName, "Service Status")
 
 		outage := Outage{
-			Provider:  "amazon",
-			Service:   svcName,
-			StartTime: *item.PublishedParsed,
+			Provider:    "amazon",
+			Service:     svcName,
+			StartTime:   *item.PublishedParsed,
+			Description: item.Description,
 		}
 
 		a.Logger.Infow("Loaded outage information",
