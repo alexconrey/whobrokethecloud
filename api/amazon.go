@@ -41,7 +41,7 @@ func (a *AmazonFeed) GetOutages() ([]Outage, error) {
 		return nil, err
 	}
 
-	yesterday := time.Now().AddDate(0, 0, -1)
+	yesterday := time.Now().AddDate(0, 0, -31)
 
 	for _, item := range feed.Items {
 		if item.PublishedParsed.Before(yesterday) {

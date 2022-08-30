@@ -1,4 +1,9 @@
 import { useState, useEffect } from 'react';
+import Moment from 'moment';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
+
 
 // eslint-disable-next-line
 Object.defineProperty(String.prototype, 'capitalize', {
@@ -58,6 +63,8 @@ export default function Blame() {
     const [isLoaded, setIsLoaded] = useState(false);
     const [items, setItems] = useState([]);
 
+    Moment.locale('en')
+
     var outageDict = {};
     var currentOutageCount = {};
     var outageArr = [];
@@ -97,15 +104,29 @@ export default function Blame() {
         const affectedProviders = Object.keys(currentOutageCount).length;
 
         if (affectedProviders === 0) {
-            return <div>No outages, surprisingly!</div>
-        } else if (affectedProviders == 1) {
             return (
-                <div>
+                <Container>
+                    <Typography variant="h2" align="center">
+                        No outages, surprisingly!
+                    </Typography>
+                    <Typography align="center">
+                        Think we're wrong? <a href="mailto:dev@null.com">Let us know!</a>
+                    </Typography>
+                </Container>
+            )
+        } else if (affectedProviders === 1) {
+            const outages = Object.entries(outageArr)[0][1]
+            const outage = outages[0]
+            // Tuesday, August 30 @ 11:32:35 AM
+            const startTimeFormatted = Moment(outage.StartTime).format('dddd, MMMM DD YYYY @ hh:mm:ss A')
+            return (
+                <Box sx={{ my: 4 }}>
                     <h1>We're blaming {Object.keys(currentOutageCount)[0].capitalize()}</h1>
                     <div>
+                        <p>On {startTimeFormatted}, {outage.Provider.capitalize()} reported an issue.</p>
                         <RenderOutageTable outages={outageArr} />
                     </div>
-                </div>
+                </Box>
             )
         } else {
             return (

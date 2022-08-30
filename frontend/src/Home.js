@@ -1,5 +1,5 @@
 // import { useEffect } from "react/cjs/react.production.min";
-import { useState, useEffect } from 'react';
+// import { useState, useEffect } from 'react';
 import Blame from './Blame';
 
 function Home() {

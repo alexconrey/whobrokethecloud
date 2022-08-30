@@ -57,7 +57,11 @@ func (gf *GoogleFeed) GetOutages() error {
 			continue
 		}
 
-		if outage.StatusImpact != "SERVICE_DISRUPTION" {
+		if (outage.StatusImpact != "SERVICE_DISRUPTION") && (outage.StatusImpact != "SERVICE_OUTAGE") {
+			continue
+		}
+
+		if outage.Severity != "high" {
 			continue
 		}
 
@@ -117,7 +121,6 @@ type GoogleOutage struct {
 }
 
 func (out *GoogleOutage) ToOutage() Outage {
-	fmt.Println(out.ExternalDescription)
 	return Outage{
 		Provider:     "google",
 		Service:      out.ServiceName,
