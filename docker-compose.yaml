@@ -9,6 +9,17 @@ services:
     command:
       - '-metrics-port=9100'
       - '-debug'
+  frontend:
+    build: frontend
+    ports:
+      - 3001:3001
+    command:
+      - npm
+      - start
+    environment:
+      - PORT=3001
+    volumes:
+      - ./frontend/:/app
   prometheus:
     image: prom/prometheus:v2.36.2
     volumes:
@@ -32,6 +43,14 @@ services:
       - 3000:3000
     links:
       - prometheus:prometheus
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./dev/nginx:/etc/nginx/conf.d:ro
+    ports:
+      - 80:80
+    links:
+      - api
 
 volumes:
   prometheus_data: {}
