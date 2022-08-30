@@ -11,7 +11,7 @@ services:
   prometheus:
     image: prom/prometheus:v2.36.2
     volumes:
-      - ./dev-prometheus/:/etc/prometheus/
+      - ./dev/prometheus/:/etc/prometheus/
       - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yaml'
@@ -22,6 +22,22 @@ services:
       - 9090:9090
     links:
       - api:api
+  grafana:
+    image: grafana/grafana-oss:latest
+    volumes:
+      - ./dev/grafana/:/etc/grafana/provisioning
+    #   - prometheus_data:/prometheus
+    # command:
+    #   - '--config.file=/etc/prometheus/prometheus.yaml'
+    #   - '--storage.tsdb.path=/prometheus'
+    #   - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+    #   - '--web.console.templates=/usr/share/prometheus/consoles'
+    # environment:
+    #   - GF_DATASOURCES_=value
+    ports:
+      - 3000:3000
+    links:
+      - prometheus:prometheus
 
 volumes:
   prometheus_data: {}
