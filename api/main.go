@@ -21,6 +21,7 @@ func main() {
 		metricsPort int
 		pollDelay   time.Duration
 		isDebug     bool
+		watchdogTtl time.Duration
 
 		feedPollDuration = prometheus.NewHistogramVec(prometheus.HistogramOpts{
 			Name: "outage_feed_poll_duration",
@@ -36,6 +37,7 @@ func main() {
 	flag.IntVar(&debugPort, "debug-port", 6060, "The port on which to run debugging services")
 	flag.IntVar(&metricsPort, "metrics-port", 9100, "The port on which the metrics server will run")
 	flag.DurationVar(&pollDelay, "poll-delay", time.Second*180, "The delay interval (in seconds) for waiting between polling attempts per provider")
+	flag.DurationVar(&watchdogTtl, "watchdog-ttl", time.Hour*24, "The TTL for outages to exist")
 	flag.BoolVar(&isDebug, "debug", false, "Enable debug features (pprof, etc)")
 	flag.Parse()
 
@@ -98,7 +100,8 @@ func main() {
 	go outages.PollMetrics()
 
 	// Cleanup events in memory older than x amount of days
-	go outages.StartWatchdog(90)
+	// watchdogTtl := time.Duration(time.Millisecond)
+	go outages.StartWatchdog(watchdogTtl)
 
 	// Start HTTP server
 	r := mux.NewRouter()

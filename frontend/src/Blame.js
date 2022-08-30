@@ -13,7 +13,8 @@ function RenderOutageRow(props) {
         <tr key="{props.provider}-{props.service}">
             <td>{props.provider.capitalize()}</td>
             <td>{props.service}</td>
-            <td>{props.starttime}</td>
+            {/* <td>{props.starttime}</td> */}
+            <td>{props.modifiedtime}</td>
             <td>{props.description}</td>
         </tr>
     )
@@ -26,7 +27,8 @@ function RenderOutageTable(props) {
                 <RenderOutageRow 
                     provider={outage.Provider} 
                     service={outage.Service} 
-                    starttime={outage.StartTime} 
+                    // starttime={outage.StartTime}
+                    modifiedtime={outage.ModifiedTime}
                     description={outage.Description} 
                 />
             )
@@ -38,7 +40,8 @@ function RenderOutageTable(props) {
                 <tr>
                     <th>Provider</th>
                     <th>Service</th>
-                    <th>Start Time</th>
+                    {/* <th>Start Time</th> */}
+                    <th>Last Updated</th>
                     <th>Description</th>
                 </tr>
             </thead>

@@ -119,9 +119,10 @@ type GoogleOutage struct {
 func (out *GoogleOutage) ToOutage() Outage {
 	fmt.Println(out.ExternalDescription)
 	return Outage{
-		Provider:    "google",
-		Service:     out.ServiceName,
-		StartTime:   out.Begin,
-		Description: out.ExternalDescription,
+		Provider:     "google",
+		Service:      out.ServiceName,
+		StartTime:    out.Begin,
+		ModifiedTime: out.Modified,
+		Description:  out.ExternalDescription,
 	}
 }

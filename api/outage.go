@@ -10,10 +10,11 @@ import (
 )
 
 type Outage struct {
-	Provider    string
-	Service     string
-	StartTime   time.Time
-	Description string
+	Provider     string
+	Service      string
+	StartTime    time.Time
+	ModifiedTime time.Time
+	Description  string
 }
 
 type Outages struct {
@@ -111,16 +112,17 @@ func (o *Outages) AddOutage(outage Outage) {
 	)
 }
 
-func (o *Outages) StartWatchdog(days_ttl int) {
+func (o *Outages) StartWatchdog(duration time.Duration) {
 	o.Logger.Infow("Starting TTL Watchdog")
 	// TTL is passed as a unit of days, therefore we need to invert
 	// and look that many negative days ago
-	invert_date := days_ttl * -1
-	max_date := time.Now().AddDate(0, 0, invert_date)
+	invert_date := duration * -1
+	max_date := time.Now().Add(invert_date)
 
 	for {
 		for idx, item := range o.Outages {
-			if item.StartTime.Before(max_date) {
+			// Check if start or modified time exceed the max date
+			if item.StartTime.Before(max_date) && item.ModifiedTime.Before(max_date) {
 				o.Logger.Infow(
 					"Removing due to expired TTL",
 					// "outage", item,
@@ -128,7 +130,7 @@ func (o *Outages) StartWatchdog(days_ttl int) {
 				o.removeIndexFromOutages(idx)
 			}
 		}
-		time.Sleep(time.Second * 5)
+		time.Sleep(duration)
 	}
 }
 
