@@ -16,6 +16,9 @@ import (
 func main() {
 	var (
 		wait           time.Duration
+		httpPort       int
+		debugPort      int
+		metricsPort    int
 		requestCounter = prometheus.NewCounterVec(prometheus.CounterOpts{
 			Name: "http_requests_total",
 			Help: "Total number of HTTP requests",
@@ -55,6 +58,9 @@ func main() {
 	// FLAGS
 	//
 	flag.DurationVar(&wait, "graceful-timeout", time.Second*15, "the duration for which the server gracefully wait for existing connections to finish - e.g. 15s or 1m")
+	flag.IntVar(&httpPort, "http-port", 8080, "The port on which the HTTP server will run")
+	flag.IntVar(&debugPort, "debug-port", 6060, "The port on which to run debugging services")
+	flag.IntVar(&metricsPort, "metrics-port", 9090, "The port on which the metrics server will run")
 	flag.Parse()
 
 	outages := NewOutages(sugar)
@@ -109,7 +115,7 @@ func main() {
 	r.HandleFunc("/healthz", HealthHandler)
 
 	srv := &http.Server{
-		Addr:         "0.0.0.0:8080",
+		Addr:         fmt.Sprintf("0.0.0.0:%d", httpPort),
 		WriteTimeout: time.Second * 15,
 		ReadTimeout:  time.Second * 15,
 		IdleTimeout:  time.Second * 60,
@@ -125,7 +131,7 @@ func main() {
 
 	// Run Debug HTTP server as non-blocking, goroutine
 	if isDebug {
-		debugServer := NewDebugServer(fmt.Sprintf("%s:%d", "localhost", 6060), sugar)
+		debugServer := NewDebugServer(fmt.Sprintf("%s:%d", "0.0.0.0", debugPort), sugar)
 		sugar.Debug("Starting debug http server")
 		go func() {
 			if err := debugServer.Server.ListenAndServe(); err != nil {
@@ -136,7 +142,7 @@ func main() {
 
 	// Run Metrics HTTP server as non-blocking, goroutine
 	go func() {
-		metricsServer := NewMetricsServer(fmt.Sprintf("%s:%d", "localhost", 9090), sugar)
+		metricsServer := NewMetricsServer(fmt.Sprintf("%s:%d", "0.0.0.0", metricsPort), sugar)
 		sugar.Infow("Starting metrics http server")
 		if err := metricsServer.Server.ListenAndServe(); err != nil {
 			sugar.Error(err.Error())
