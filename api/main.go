@@ -15,19 +15,11 @@ import (
 
 func main() {
 	var (
-		wait           time.Duration
-		httpPort       int
-		debugPort      int
-		metricsPort    int
-		requestCounter = prometheus.NewCounterVec(prometheus.CounterOpts{
-			Name: "http_requests_total",
-			Help: "Total number of HTTP requests",
-		}, []string{"path"})
-
-		// httpDuration = prometheus.NewHistogramVec(prometheus.HistogramOpts{
-		// 	Name: "http_duration_seconds",
-		// 	Help: "Duration of HTTP requests.",
-		// }, []string{"path"})
+		wait        time.Duration
+		httpPort    int
+		debugPort   int
+		metricsPort int
+		pollDelay   time.Duration
 
 		feedPollDuration = prometheus.NewHistogramVec(prometheus.HistogramOpts{
 			Name: "outage_feed_poll_duration",
@@ -50,9 +42,8 @@ func main() {
 
 	sugar.Info("Starting whobrokethe.cloud API service")
 
-	// prometheus.Register(httpDuration)
+	// prometheus.Register(requestCounter)
 	prometheus.Register(feedPollDuration)
-	prometheus.Register(requestCounter)
 
 	//
 	// FLAGS
@@ -60,7 +51,8 @@ func main() {
 	flag.DurationVar(&wait, "graceful-timeout", time.Second*15, "the duration for which the server gracefully wait for existing connections to finish - e.g. 15s or 1m")
 	flag.IntVar(&httpPort, "http-port", 8080, "The port on which the HTTP server will run")
 	flag.IntVar(&debugPort, "debug-port", 6060, "The port on which to run debugging services")
-	flag.IntVar(&metricsPort, "metrics-port", 9090, "The port on which the metrics server will run")
+	flag.IntVar(&metricsPort, "metrics-port", 9100, "The port on which the metrics server will run")
+	flag.DurationVar(&pollDelay, "poll-delay", time.Second*180, "The delay interval (in seconds) for waiting between polling attempts per provider")
 	flag.Parse()
 
 	outages := NewOutages(sugar)
@@ -94,8 +86,10 @@ func main() {
 	}
 
 	// Polling goroutines
-	go aznFeeds.Poll(180)
-	go googleFeed.Poll(180)
+	fmt.Println(pollDelay)
+
+	go aznFeeds.Poll(pollDelay)
+	go googleFeed.Poll(pollDelay)
 
 	// Watch for outage events in the channel
 	go outages.HandleOutages()

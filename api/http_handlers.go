@@ -7,7 +7,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
-
 	"net/http"
 	"os"
 )
@@ -16,6 +15,11 @@ var (
 	httpDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
 		Name: "http_duration_seconds",
 		Help: "Duration of HTTP requests.",
+	}, []string{"path"})
+
+	requestCounter = prometheus.NewCounterVec(prometheus.CounterOpts{
+		Name: "http_requests_total",
+		Help: "Total number of HTTP requests",
 	}, []string{"path"})
 )
 
@@ -48,12 +52,16 @@ func loggingMiddleware(next http.Handler) http.Handler {
 // prometheusMiddleware implements mux.MiddlewareFunc.
 func prometheusMiddleware(next http.Handler) http.Handler {
 	prometheus.Register(httpDuration)
+	prometheus.Register(requestCounter)
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		route := mux.CurrentRoute(r)
 		path, _ := route.GetPathTemplate()
 		timer := prometheus.NewTimer(httpDuration.WithLabelValues(path))
-		next.ServeHTTP(w, r)
+		wr := NewLoggingResponseWriter(w)
+		next.ServeHTTP(wr, r)
 		timer.ObserveDuration()
+		requestCounter.WithLabelValues(path).Inc()
 	})
 }
 

@@ -16,29 +16,6 @@ var (
 	}
 )
 
-// func getAmazonFeeds() []string {
-// 	rtn := []string{}
-// 	for _, svc := range []string{
-// 		"ec2",
-// 		"ecs",
-// 		"eks",
-// 		"elb",
-// 		"elasticache",
-// 		"rds",
-// 	} {
-// 		for _, region := range []string{
-// 			"us-east-1",
-// 			"us-east-2",
-// 			"us-west-1",
-// 			"us-west-2",
-// 		} {
-// 			str := fmt.Sprintf("https://status.aws.amazon.com/rss/%s-%s.rss", svc, region)
-// 			rtn = append(rtn, str)
-// 		}
-// 	}
-// 	return rtn
-// }
-
 func checkIgnoreTitleStrings(str string) bool {
 	for _, ignoreStr := range ignoreTitleStrings {
 		if strings.Contains(str, ignoreStr) {
@@ -139,14 +116,16 @@ func (az *AmazonFeeds) GetOutages() error {
 	return nil
 }
 
-func (az *AmazonFeeds) Poll(delaySeconds int) error {
+func (az *AmazonFeeds) Poll(delay time.Duration) error {
+	az.Logger.Debugw("Polling provider",
+		"provider", "amazon",
+	)
 	for {
 		err := az.GetOutages()
 		if err != nil {
 			return err
 		}
 
-		time.Sleep(time.Second *
-			(time.Duration(delaySeconds) * time.Millisecond))
+		time.Sleep(delay)
 	}
 }
