@@ -40,7 +40,7 @@ jobs:
         with:
           name: frontend-assets
           path: frontend/
-      - run: aws s3 cp --endpoint-url=https://us-east-1.linodeobjects.com frontend/* s3://${asset-bucket}/
+      - run: aws s3 cp --endpoint-url=https://us-east-1.linodeobjects.com frontend/ s3://${asset-bucket}/
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
