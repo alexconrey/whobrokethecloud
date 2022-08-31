@@ -24,8 +24,22 @@ jobs:
           go-version-file: ${{ env.working-directory }}/go.mod
           cache: true
           cache-dependency-path: ${{ env.working-directory }}/go.sum
-      - run: go test
+      - name: Go test
+        if: always()
+        run: go test ./...
         working-directory: ${{ env.working-directory }}
+      - name: Go vet
+        if: always()
+        run: go vet ./...
+        working-directory: ${{ env.working-directory }}
+      - name: Staticcheck
+        if: always()
+        uses: dominikh/staticcheck-action@v1.2.0
+        with:
+          version: "2022.1.1"
+          install-go: false
+          cache-key: ${{ matrix.go }}
+          working-directory: ${{ env.working-directory }}
   frontend:
     runs-on: ubuntu-latest
     strategy:
