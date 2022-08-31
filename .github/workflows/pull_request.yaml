@@ -21,19 +21,28 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version: ${{ matrix.go }}
+          go-version-file: ${{ env.working-directory }}/go.mod
+          cache: true
+          cache-dependency-path: ${{ env.working-directory }}/go.sum
       - run: go test
+        working-dir: ${{ env.working-directory }}
   frontend:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [ '18.x' ]
+    name: Frontend - Node.JS ${{ matrix.node }}
     env:
       working-directory: ./frontend
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.JS 18.x
+      - name: Use Node.JS ${{ matrix.node }}
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
           cache: 'npm'
           cache-dependency-path: ${{ env.working-directory }}/package-lock.json
+          node-version: ${{ matrix.node }}
       - run: npm ci
         working-directory: ${{ env.working-directory }}
       - run: npm test
