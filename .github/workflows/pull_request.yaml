@@ -21,8 +21,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           tags: whobrokethecloud/api:latest
-          outputs:
-            - 'type=local,tar=api.tar'
+          outputs: 'type=oci,dest=api.tar'
   api:
     runs-on: ubuntu-latest
     strategy:
