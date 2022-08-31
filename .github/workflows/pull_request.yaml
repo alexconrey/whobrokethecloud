@@ -20,6 +20,7 @@ jobs:
       - name: Build docker image
         uses: docker/build-push-action@v3
         with:
+          context: api/Dockerfile
           tags: whobrokethecloud/api:latest
           outputs: 'type=oci,dest=api.tar'
   api:
