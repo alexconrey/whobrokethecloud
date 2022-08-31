@@ -1,12 +1,8 @@
 name: Build and Deploy
 
 on:
-  push: {}
-# on:
-#   push:
-#     branches: [ main ]
-#   pull_request:
-#     branches: [ main ]
+  push:
+    branches: [ main ]
 
 jobs:
   frontend:
