@@ -53,7 +53,6 @@ jobs:
       - name: Use Node.JS ${{ matrix.node }}
         uses: actions/setup-node@v3
         with:
-          node-version: 18.x
           cache: 'npm'
           cache-dependency-path: ${{ env.working-directory }}/package-lock.json
           node-version: ${{ matrix.node }}
