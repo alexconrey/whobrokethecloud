@@ -23,8 +23,8 @@ jobs:
           node-version: 18.x
       - run: npm ci
         working-directory: ${{ env.working-directory }}
-      # - run: npm test
-      #   working-directory: ${{ env.working-directory }}
+      - run: npm test
+        working-directory: ${{ env.working-directory }}
       - run: npm run build
         env:
           CI: false
