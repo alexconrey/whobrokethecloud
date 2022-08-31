@@ -6,9 +6,9 @@ on:
   #     - '!main'
   #     - '!master'
   push:
-    branches:
-      - '!main'
-      - '!master'
+    branches-ignore:
+      - 'main'
+      - 'master'
 
 jobs:
   frontend:
