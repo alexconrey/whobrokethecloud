@@ -43,7 +43,8 @@ jobs:
           name: frontend-assets
       - name: Upload frontend assets to object storage
         # run: aws s3 cp --endpoint-url=https://us-east-1.linodeobjects.com --recursive . s3://${{ env.assets-bucket }}/
-        run: s3cmd \
+        run: |
+            s3cmd \
               --host=us-east-1.linodeobjects.com \
               --host-bucket="%(bucket)s.us-east-1.linodeobjects.com" \
               --no-mime-magic \
