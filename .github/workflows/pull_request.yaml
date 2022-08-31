@@ -6,9 +6,9 @@ on:
   #     - '!main'
   #     - '!master'
   push:
-    branches:
-      - '!main'
-      - '!master'
+    branches-ignore:
+      - 'main'
+      - 'master'
 
 jobs:
   frontend:
@@ -23,5 +23,15 @@ jobs:
           node-version: 18.x
       - run: npm ci
         working-directory: ${{ env.working-directory }}
-      - run: npm test
+      # - run: npm test
+      #   working-directory: ${{ env.working-directory }}
+      - run: npm run build
+        env:
+          CI: false
         working-directory: ${{ env.working-directory }}
+      - name: Archive frontend artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-assets
+          path: |
+            ${{ env.working-directory }}/build/
