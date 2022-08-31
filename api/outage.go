@@ -55,16 +55,25 @@ func (o *Outages) PollMetrics() {
 
 func (o *Outages) HandleOutages() {
 	o.Logger.Infow("Starting outage handler")
+	// for {
+	// 	select {
+	// 	case outage := <-o.Chan:
+	// 		o.Logger.Infow("Processing outage event",
+	// 			"provider", outage.Provider,
+	// 			"start_time", outage.StartTime,
+	// 		)
+	// 		o.AddOutage(outage)
+	// 		outagesProcessed.With(prometheus.Labels{"provider": outage.Provider}).Inc()
+	// 	}
+	// }
 	for {
-		select {
-		case outage := <-o.Chan:
-			o.Logger.Infow("Processing outage event",
-				"provider", outage.Provider,
-				"start_time", outage.StartTime,
-			)
-			o.AddOutage(outage)
-			outagesProcessed.With(prometheus.Labels{"provider": outage.Provider}).Inc()
-		}
+		outage := <-o.Chan
+		o.Logger.Infow("Processing outage event",
+			"provider", outage.Provider,
+			"start_time", outage.StartTime,
+		)
+		o.AddOutage(outage)
+		outagesProcessed.With(prometheus.Labels{"provider": outage.Provider}).Inc()
 	}
 }
 
