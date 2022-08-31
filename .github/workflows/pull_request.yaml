@@ -8,9 +8,9 @@ on:
 
 jobs:
   api-image:
-    defaults:
-      run:
-        working-directory: api
+    # defaults:
+    #   run:
+    #     working-directory: api
     runs-on: ubuntu-latest
     name: API - Docker Image
     steps:
@@ -20,7 +20,8 @@ jobs:
       - name: Build docker image
         uses: docker/build-push-action@v3
         with:
-          context: api/Dockerfile
+          context: api/
+          file: api/Dockerfile
           tags: whobrokethecloud/api:latest
           outputs: 'type=oci,dest=api.tar'
   api:
