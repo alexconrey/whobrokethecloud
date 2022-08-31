@@ -24,9 +24,9 @@ jobs:
           context: api/
           file: api/Dockerfile
           tags: whobrokethecloud/api:latest
-          outputs: 'type=oci,dest=api.tar'
-      - name: outputs
-        run: echo "imageid ${{ steps.docker_build.outputs.imageid }}"
+          # outputs: 'type=oci,dest=api.tar'
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
   api:
     runs-on: ubuntu-latest
     strategy:
