@@ -38,4 +38,5 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: frontend-assets
-      - run: ls
+          path: frontend/
+      - run: ls frontend/
