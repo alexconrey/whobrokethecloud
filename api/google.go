@@ -88,7 +88,7 @@ type GoogleProduct struct {
 
 type GoogleLocation struct {
 	ID    string `json:"ID"`
-	Title string `json:'title"`
+	Title string `json:"title"`
 }
 
 type GoogleOutageUpdate struct {
