@@ -26,7 +26,6 @@ jobs:
       - run: npm run build
         working-directory: ${{ env.working-directory }}
       - name: Archive frontend artifacts
-        working-directory: ${{ env.working-directory }}
         uses: actions/upload-artifact@v3
         with:
           name: frontend-assets
