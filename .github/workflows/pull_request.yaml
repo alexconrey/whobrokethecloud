@@ -23,7 +23,6 @@ jobs:
           tags: whobrokethecloud/api:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          outputs: 'type=oci,dest=api.tar'
   api:
     runs-on: ubuntu-latest
     name: API - Go
