@@ -25,7 +25,7 @@ jobs:
           cache: true
           cache-dependency-path: ${{ env.working-directory }}/go.sum
       - run: go test
-        working-dir: ${{ env.working-directory }}
+        working-directory: ${{ env.working-directory }}
   frontend:
     runs-on: ubuntu-latest
     strategy:
