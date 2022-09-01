@@ -70,7 +70,8 @@ export default function Blame() {
     var outageArr = [];
 
     useEffect(() => {
-        fetch("http://localhost/api/outages")
+        const host = window.location.protocol + "//" + window.location.host;
+        fetch(host+"/api/outages")
         .then(res => res.json())
         .then(
             (result) => {
