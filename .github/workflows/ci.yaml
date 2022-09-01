@@ -68,11 +68,11 @@ jobs:
         env:
           CI: false
         working-directory: ${{ env.working-directory }}
-      - name: Download frontend artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: frontend-assets
-          path: frontend/
+      # - name: Download frontend artifacts
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: frontend-assets
+      #     path: frontend/
       - name: Upload frontend assets to object storage
         run: |
             s3cmd \
