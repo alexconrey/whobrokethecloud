@@ -82,6 +82,10 @@ jobs:
         env:
           CI: false
         working-directory: ${{ env.working-directory }}
+      - uses: actions/upload-artifact@v3
+        with:
+          name: frontend
+          path: ${{ env.working-directory }}/build/
       - run: python -m pip install s3cmd
       - name: Upload frontend assets to object storage
         working-directory: ${{ env.working-directory }}
@@ -93,6 +97,7 @@ jobs:
               --no-delete-removed \
               --acl-public \
               --verbose \
+              --debug \
               sync \
               build/ \
               s3://${{ env.assets-bucket }}
