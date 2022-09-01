@@ -63,18 +63,29 @@ jobs:
       working-directory: ./frontend
     steps:
       - uses: actions/checkout@v3
+      - name: Cache build output
+        id: build-cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.working-directory }}/build/**
+          key: frontend-build-${{ hashFiles('frontend/**') }}
       - name: Use Node.JS 18.x
+        if: steps.build-cache.outputs.cache-hit != 'true'
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
       - run: npm ci
+        if: steps.build-cache.outputs.cache-hit != 'true'
         working-directory: ${{ env.working-directory }}
       - run: npm run build
+        if: steps.build-cache.outputs.cache-hit != 'true'
         env:
           CI: false
         working-directory: ${{ env.working-directory }}
-      - run: python -m pip install s3cmd
+      - if: steps.build-cache.outputs.cache-hit != 'true'
+        run: python -m pip install s3cmd
       - name: Upload frontend assets to object storage
+        if: steps.build-cache.outputs.cache-hit != 'true'
         run: |
             s3cmd \
               --host=us-east-1.linodeobjects.com \
@@ -89,24 +100,21 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   deploy:
     name: Deply helm chart
-    needs:
-      - frontend
-      - api
+    # needs:
+    #   - frontend
+    #   - api
     runs-on: ubuntu-latest
-    env:
-      LINODE_CLI_TOKEN: ${{ secrets.LINODE_CLI_TOKEN_K8S_RO }}
     steps:
       - uses: actions/checkout@v3
-      - name: Install linode-cli
-        run: pip install linode-cli
-      - name: Get Cluster ID
-        id: cluster_id
-        run: |
-          CLUSTER_ID=$(linode-cli lke clusters-list --json | jq '.[] | select(.label == "production") | .id')
-          echo "::set-output name=cluster_id::${CLUSTER_ID}"
-      - name: Get Cluster kubeconfig
-        run: |
-          test -d ~/.kube || mkdir -p ~/.kube
-          linode-cli lke kubeconfig-view ${{ steps.cluster_id.outputs.cluster_id }} > ~/.kube/config
-          kubectl get pods
+      - uses: azure/k8s-set-context@v2
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+      - name: Deploy helm chart
+        uses: 'deliverybot/helm@v1'
+        with:
+          release: 'whobrokethecloud'
+          namespace: 'default'
+          chart: 'charts/whobrokethecloud'
+
 
