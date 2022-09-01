@@ -90,6 +90,7 @@ jobs:
               --host=us-east-1.linodeobjects.com \
               --host-bucket="%(bucket)s.us-east-1.linodeobjects.com" \
               --no-mime-magic \
+              --no-delete-removed \
               --acl-public \
               --verbose \
               sync \
