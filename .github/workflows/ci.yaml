@@ -2,7 +2,7 @@ name: Build and Deploy
 
 on:
   push:
-    # branches: [ main ]
+    branches: [ main ]
 
 concurrency: ci-${{ github.ref }}
 
@@ -100,9 +100,9 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   deploy:
     name: Deply helm chart
-    # needs:
-    #   - frontend
-    #   - api
+    needs:
+      - frontend
+      - api
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
