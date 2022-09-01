@@ -68,11 +68,20 @@ ingress:
         proxy_pass       https://whobrokethecloud-assets.website-us-east-1.linodeobjects.com/static/$1;
       }
 
+      # location /manifest.json {
+      #   proxy_set_header Host whobrokethecloud-assets.website-us-east-1.linodeobjects.com;
+      #   proxy_pass       https://whobrokethecloud-assets.website-us-east-1.linodeobjects.com/manifest.json;
+      # }
+
   hosts:
     - host: whobrokethe.cloud
       paths:
         - path: /api/(.+)
           pathType: Prefix
+        - path: /(.+)
+          pathType: Prefix
+          svcName: whobrokethecloud-bucket
+          svcPort: 80
         - path: /
           pathType: Prefix
           svcName: whobrokethecloud-bucket
