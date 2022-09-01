@@ -111,7 +111,7 @@ jobs:
           method: kubeconfig
           kubeconfig: ${{ secrets.KUBE_CONFIG }}
       - name: Deploy helm chart
-        uses: 'deliverybot/helm@v1'
+        uses: glopezep/helm@v1.7.1 # This is due to https://github.com/deliverybot/helm/issues/66
         with:
           release: 'whobrokethecloud'
           namespace: 'default'
