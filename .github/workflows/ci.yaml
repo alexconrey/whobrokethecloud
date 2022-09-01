@@ -22,13 +22,22 @@ jobs:
       - name: Build docker image
         uses: docker/build-push-action@v3
         with:
+          context: ${{ env.working-directory }}/
+          file: ${{ env.working-directory }}/Dockerfile
           tags: whobrokethecloud/api:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           outputs:
             - 'type=local,tar=api.tar'
+      - name: Archive api container iamge
+        uses: actions/upload-artifact@v3
+        with:
+          name: api-container
+          path: |
+            api.tar
       - name: Setup go
         uses: actions/setup-go@v3
         with:
-          # go-version: ${{ matrix.go }}
           go-version-file: ${{ env.working-directory }}/go.mod
           cache: true
           cache-dependency-path: ${{ env.working-directory }}/go.sum
