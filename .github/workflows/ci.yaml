@@ -92,6 +92,7 @@ jobs:
               --host-bucket="%(bucket)s.us-east-1.linodeobjects.com" \
               --no-mime-magic \
               --acl-public \
+              --verbose \
               sync \
               ${{ env.working-directory }}/build/ \
               s3://${{ env.assets-bucket }}
