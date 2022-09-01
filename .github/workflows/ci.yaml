@@ -87,7 +87,9 @@ jobs:
       #     name: frontend
       #     path: ${{ env.working-directory }}/build/
       - run: python -m pip install s3cmd
+        if: steps.build-cache.outputs.cache-hit != 'true'
       - name: Upload frontend assets to object storage
+        if: steps.build-cache.outputs.cache-hit != 'true'
         working-directory: ${{ env.working-directory }}
         run: |
             s3cmd \
@@ -96,8 +98,6 @@ jobs:
               --no-mime-magic \
               --no-delete-removed \
               --acl-public \
-              --verbose \
-              --debug \
               sync \
               build/ \
               s3://${{ env.assets-bucket }}
