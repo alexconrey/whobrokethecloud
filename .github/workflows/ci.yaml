@@ -31,6 +31,7 @@ jobs:
           context: ${{ env.working-directory }}/
           file: ${{ env.working-directory }}/Dockerfile
           tags: registry.myhomelab.network/whobrokethecloud/api:latest
+          push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
       # - name: Setup go
