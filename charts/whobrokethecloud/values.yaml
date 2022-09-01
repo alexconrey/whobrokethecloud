@@ -12,6 +12,10 @@ letsencrypt:
     - whobrokethe.cloud
   secretName: webrokethecloud-cert-secret
 
+metrics:
+  enabled: true
+  port: 9100
+
 replicaCount: 1
 
 image:
