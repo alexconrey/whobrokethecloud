@@ -85,7 +85,7 @@ jobs:
       - if: steps.build-cache.outputs.cache-hit != 'true'
         run: python -m pip install s3cmd
       - name: Upload frontend assets to object storage
-        if: steps.build-cache.outputs.cache-hit != 'true'
+        working-directory: ${{ env.working-directory }}
         run: |
             s3cmd \
               --host=us-east-1.linodeobjects.com \
@@ -94,7 +94,7 @@ jobs:
               --acl-public \
               --verbose \
               sync \
-              ${{ env.working-directory }}/build/ \
+              build/ \
               s3://${{ env.assets-bucket }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
