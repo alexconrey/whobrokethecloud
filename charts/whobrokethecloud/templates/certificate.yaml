@@ -1,0 +1,17 @@
+{{- if .Values.letsencrypt.enabled }}
+{{- $fullName := include "whobrokethecloud.fullname" . -}}
+{{- $secretName := .Values.letsencrypt.secretName | default (printf "%s-cert-secret" $fullName) }}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ $fullName }}
+spec:
+  secretName: {{ $secretName }}
+  duration: 2160h # 90d
+  renewBefore: 360h # 15d
+  issuerRef:
+    name: {{ $fullName }}
+    kind: ClusterIssuer
+  dnsNames:
+  {{ .Values.letsencrypt.dnsNames | toYaml | indent 2}}
+{{- end }}

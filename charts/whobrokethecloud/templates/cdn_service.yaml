@@ -1,0 +1,11 @@
+{{- if .Values.cdnService.enabled }}
+{{- $fullName := include "whobrokethecloud.fullname" . -}}
+{{- $svcName := .Values.cdnService.name | default (printf "%s-bucket" $fullName) }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $svcName | quote }}
+spec:
+  type: ExternalName
+  externalName: {{ .Values.cdnService.endpoint | quote }}
+{{- end }}
