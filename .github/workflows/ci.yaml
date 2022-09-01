@@ -110,11 +110,18 @@ jobs:
         with:
           method: kubeconfig
           kubeconfig: ${{ secrets.KUBE_CONFIG }}
+      - name: Install helm
+        run: |
+          curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash -
       - name: Deploy helm chart
-        uses: glopezep/helm@v1.7.1 # This is due to https://github.com/deliverybot/helm/issues/66
-        with:
-          release: 'whobrokethecloud'
-          namespace: 'default'
-          chart: 'charts/whobrokethecloud'
+        working-directory: charts
+        run: helm upgrade --install whobrokethecloud whobrokethecloud --values whobrokethecloud/values.yaml
+          
+      # - name: Deploy helm chart
+      #   uses: glopezep/helm@v1.7.1 # This is due to https://github.com/deliverybot/helm/issues/66
+      #   with:
+      #     release: 'whobrokethecloud'
+      #     namespace: 'default'
+      #     chart: 'charts/whobrokethecloud'
 
 
