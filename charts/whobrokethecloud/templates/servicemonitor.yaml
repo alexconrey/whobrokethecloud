@@ -1,0 +1,21 @@
+{{- if .Values.metrics.enabled }}
+{{- $fullName := include "whobrokethecloud.fullname" . -}}
+{{- $svc := .Values.metrics.port | default 9100 }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    {{- include "whobrokethecloud.labels" . | nindent 4 }}
+  name: {{ include "whobrokethecloud.fullname" . }}
+spec:
+  endpoints:
+  - interval: 15s
+    targetPort: {{ .Values.metrics.port }}
+    path: /
+  # namespaceSelector:
+  #   matchNames:
+  #   - prometheus
+  selector:
+    matchLabels:
+      {{- include "whobrokethecloud.selectorLabels" . | nindent 6 }}
+{{- end }}
