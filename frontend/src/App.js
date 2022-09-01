@@ -4,8 +4,14 @@ import Home from './Home';
 import Footer from './Footer';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
+import TagManager from 'react-gtm-module';
+
+const tagManagerArgs = {
+  gtmId: 'G-JQD8MCK0QQ'
+}
 
 function App() {
+  TagManager.initialize(tagManagerArgs)
   return (
     <Grid 
       container
