@@ -4,21 +4,31 @@ on: workflow_dispatch
 
 concurrency: loadtest-${{ github.ref }}
 
+env:
+  JMETER_VERSION: "5.5"
+
 jobs:
   api:
     runs-on: ubuntu-latest
     name: Run JMeter Load Test
     steps:
       - uses: actions/checkout@v3
+      - name: Cache Jmeter
+        id: cache-jmeter
+        uses: actions/cache@v3
+        with:
+          path: apache-jmeter-${{ env.JMETER_VERSION }}
+          key: jmeter-${{ env.JMETER_VERSION }}
       - uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: 17
-      - run: |
-          wget https://dlcdn.apache.org//jmeter/binaries/apache-jmeter-5.5.zip
-          unzip apache-jmeter-5.5.zip
+      - if: steps.cache-jmeter.outputs.cache-hit != 'true'
+        run: |
+          wget https://dlcdn.apache.org//jmeter/binaries/apache-jmeter-${{ env.JMETER_VERSION }}.zip
+          unzip apache-jmeter-${{ env.JMETER_VERSION }}.zip
       - name: Run JMeter Load test
-        run: ./apache-jmeter-5.5/bin/jmeter -n -t load_test.jmx -l data.csv -e -o dashboard/
+        run: ./apache-jmeter-${{ env.JMETER_VERSION }}/bin/jmeter -n -t load_test.jmx -l data.csv -e -o dashboard/
       - uses: actions/upload-artifact@v3
         with:
           name: load-test-report
