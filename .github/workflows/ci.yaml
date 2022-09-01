@@ -57,7 +57,7 @@ jobs:
       #     cache-key: ${{ matrix.go }}
       #     working-directory: ${{ env.working-directory }}
   frontend:
-    name: Build Frontend Assets
+    name: Build and Deploy Frontend Assets
     runs-on: ubuntu-latest
     env:
       working-directory: ./frontend
@@ -73,24 +73,7 @@ jobs:
         env:
           CI: false
         working-directory: ${{ env.working-directory }}
-      - name: Archive frontend artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: frontend-assets
-          path: |
-            ${{ env.working-directory }}/build/
-  publish-assets:
-    name: Publish Web Assets
-    needs:
-      - frontend
-    runs-on: ubuntu-latest
-    steps:
       - run: python -m pip install s3cmd
-      - name: Download frontend artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: frontend-assets
-          path: frontend/
       - name: Upload frontend assets to object storage
         run: |
             s3cmd \
@@ -99,7 +82,7 @@ jobs:
               --no-mime-magic \
               --acl-public \
               sync \
-              frontend/ \
+              ${{ env.working-directory }}/build/ \
               s3://${{ env.assets-bucket }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
