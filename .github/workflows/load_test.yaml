@@ -18,6 +18,7 @@ jobs:
           wget https://dlcdn.apache.org//jmeter/binaries/apache-jmeter-5.5.zip
           unzip apache-jmeter-5.5.zip
       - name: Run JMeter Load test
+        working-directory: apache-jmeter-5.5/bin
         run: ./jmeter -n -t load_test.jmx -l data.csv -e -o dashboard/
       - uses: actions/upload-artifact@v3
         with:
