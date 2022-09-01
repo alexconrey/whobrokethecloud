@@ -96,7 +96,17 @@ jobs:
     env:
       LINODE_CLI_TOKEN: ${{ secrets.LINODE_CLI_TOKEN_K8S_RO }}
     steps:
-     - uses: actions/checkout@v3
-     - name: Install linode-cli
-       run: pip install linode-cli
-     - run: linode-cli lke clusters-list
+      - uses: actions/checkout@v3
+      - name: Install linode-cli
+        run: pip install linode-cli
+      - name: Get Cluster ID
+        id: cluster_id
+        run: |
+          CLUSTER_ID=$(linode-cli lke clusters-list --json | jq '.[] | select(.label == "production") | .id')
+          echo "::set-output name=cluster_id::${CLUSTER_ID}"
+      - name: Get Cluster kubeconfig
+        run: |
+          test -d ~/.kube || mkdir -p ~/.kube
+          linode-cli lke kubeconfig-view ${{ steps.cluster_id.outputs.stdout }} > ~/.kube/config
+          kubectl get pods
+
