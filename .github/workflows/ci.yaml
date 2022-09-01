@@ -107,6 +107,6 @@ jobs:
       - name: Get Cluster kubeconfig
         run: |
           test -d ~/.kube || mkdir -p ~/.kube
-          linode-cli lke kubeconfig-view ${{ steps.cluster_id.outputs.stdout }} > ~/.kube/config
+          linode-cli lke kubeconfig-view ${{ steps.cluster_id.outputs.cluster_id }} > ~/.kube/config
           kubectl get pods
 
