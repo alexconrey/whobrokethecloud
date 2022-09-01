@@ -91,7 +91,7 @@ jobs:
     name: Deply helm chart
     needs:
       - frontend
-      - backend
+      - api
     runs-on: ubuntu-latest
     env:
       LINODE_CLI_TOKEN: ${{ secrets.LINODE_CLI_TOKEN_K8S_RO }}
