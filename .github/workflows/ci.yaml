@@ -30,7 +30,7 @@ jobs:
         with:
           context: ${{ env.working-directory }}/
           file: ${{ env.working-directory }}/Dockerfile
-          tags: registry.myhomelab.network/whobrokethecloud/api:latest
+          tags: registry.myhomelab.network/whobrokethecloud/api:0.1.0,registry.myhomelab.network/whobrokethecloud/api:latest
           push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
