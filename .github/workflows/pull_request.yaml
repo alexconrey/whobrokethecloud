@@ -8,9 +8,6 @@ on:
 
 jobs:
   api-image:
-    # defaults:
-    #   run:
-    #     working-directory: api
     runs-on: ubuntu-latest
     name: API - Docker Image
     steps:
@@ -24,23 +21,18 @@ jobs:
           context: api/
           file: api/Dockerfile
           tags: whobrokethecloud/api:latest
-          # outputs: 'type=oci,dest=api.tar'
           cache-from: type=gha
           cache-to: type=gha,mode=max
   api:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        go: [ '1.18' ]
-    name: API - Go ${{ matrix.go }}
+    name: API - Go
     env:
       working-directory: ./api
     steps:
       - uses: actions/checkout@v3
-      - name: Setup go ${{ matrix.go }}
+      - name: Setup go
         uses: actions/setup-go@v3
         with:
-          go-version: ${{ matrix.go }}
           go-version-file: ${{ env.working-directory }}/go.mod
           cache: true
           cache-dependency-path: ${{ env.working-directory }}/go.sum
@@ -58,7 +50,7 @@ jobs:
         with:
           version: "2022.1.1"
           install-go: false
-          cache-key: ${{ matrix.go }}
+          cache-key: ${{ github.ref_name }}
           working-directory: ${{ env.working-directory }}
   frontend:
     runs-on: ubuntu-latest
