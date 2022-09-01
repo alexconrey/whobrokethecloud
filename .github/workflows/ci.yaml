@@ -27,7 +27,7 @@ jobs:
           tags: whobrokethecloud/api:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          outputs: 'type=oci,tar=api.tar'
+          outputs: 'type=oci,dest=api.tar'
       - name: Archive api container iamge
         uses: actions/upload-artifact@v3
         with:
