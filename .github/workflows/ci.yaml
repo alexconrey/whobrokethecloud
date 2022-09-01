@@ -63,18 +63,29 @@ jobs:
       working-directory: ./frontend
     steps:
       - uses: actions/checkout@v3
+      - name: Cache build output
+        id: build-cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.working-directory }}/build/**
+          key: frontend-build-${{ hashFiles('frontend/**') }}
       - name: Use Node.JS 18.x
+        if: steps.build-cache.outputs.cache-hit != 'true'
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
       - run: npm ci
+        if: steps.build-cache.outputs.cache-hit != 'true'
         working-directory: ${{ env.working-directory }}
       - run: npm run build
+        if: steps.build-cache.outputs.cache-hit != 'true'
         env:
           CI: false
         working-directory: ${{ env.working-directory }}
-      - run: python -m pip install s3cmd
+      - if: steps.build-cache.outputs.cache-hit != 'true'
+        run: python -m pip install s3cmd
       - name: Upload frontend assets to object storage
+        if: steps.build-cache.outputs.cache-hit != 'true'
         run: |
             s3cmd \
               --host=us-east-1.linodeobjects.com \
@@ -87,3 +98,30 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  deploy:
+    name: Deply helm chart
+    needs:
+      - frontend
+      - api
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: azure/k8s-set-context@v2
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+      - name: Install helm
+        run: |
+          curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash -
+      - name: Deploy helm chart
+        working-directory: charts
+        run: helm upgrade --install whobrokethecloud whobrokethecloud --values whobrokethecloud/values.yaml
+          
+      # - name: Deploy helm chart
+      #   uses: glopezep/helm@v1.7.1 # This is due to https://github.com/deliverybot/helm/issues/66
+      #   with:
+      #     release: 'whobrokethecloud'
+      #     namespace: 'default'
+      #     chart: 'charts/whobrokethecloud'
+
+
